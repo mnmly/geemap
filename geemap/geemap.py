@@ -3925,6 +3925,16 @@ class Map(ipyleaflet.Map):
         layer_gamma = 1
         left_value = 0
         right_value = 10000
+        geemap_options = {}
+
+        if 'geemap' in vis_params:
+            geemap_options = vis_params['geemap']
+            if 'left_value' in geemap_options:
+                left_value = geemap_options['left_value']
+            if 'right_value' in geemap_options:
+                right_value = geemap_options['right_value']
+
+        step_value = geemap_options['step_value'] if 'step_value' in geemap_options else 0.1
 
         self.colorbar_widget = widgets.Output(layout=widgets.Layout(height="60px"))
         self.colorbar_ctrl = ipyleaflet.WidgetControl(
@@ -3941,11 +3951,12 @@ class Map(ipyleaflet.Map):
 
             if "min" in vis_params.keys():
                 min_value = vis_params["min"]
-                if min_value < left_value:
+                if min_value < left_value and not 'geemap' in vis_params:
                     left_value = min_value - max_value
             if "max" in vis_params.keys():
                 max_value = vis_params["max"]
-                right_value = 2 * max_value
+                if not 'geemap' in vis_params:
+                    right_value = 2 * max_value
             if "gamma" in vis_params.keys():
                 layer_gamma = vis_params["gamma"]
             if "bands" in vis_params.keys():
@@ -4127,12 +4138,12 @@ class Map(ipyleaflet.Map):
                 value=[min_value, max_value],
                 min=left_value,
                 max=right_value,
-                step=0.1,
+                step=step_value,
                 description="Range:",
                 disabled=False,
                 continuous_update=False,
                 readout=True,
-                readout_format=".1f",
+                readout_format=".2f",
                 layout=widgets.Layout(width="300px"),
                 style={"description_width": "45px"},
             )
