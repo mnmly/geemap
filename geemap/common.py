@@ -8927,11 +8927,12 @@ def gdf_to_ee(gdf, geodesic=True, date=None, date_format="YYYY-MM-dd"):
     check_package(name="geopandas", URL="https://geopandas.org")
 
     import geopandas as gpd
+    import tempfile
 
     if not isinstance(gdf, gpd.GeoDataFrame):
         raise TypeError("The input data type must be geopandas.GeoDataFrame.")
 
-    out_json = os.path.join(os.getcwd(), random_string(6) + ".geojson")
+    out_json = os.path.join(tempfile.gettempdir(), random_string(6) + ".geojson")
     gdf = gdf.to_crs(4326)
     gdf.to_file(out_json, driver="GeoJSON")
 
